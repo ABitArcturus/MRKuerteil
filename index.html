@@ -3,34 +3,94 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VR & AR Example for Meta Quest 3</title>
+    <title>VR or AR Scene for Meta Quest 3</title>
 
     <!-- A-Frame Library -->
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
 
     <!-- AR.js for AR functionality -->
     <script src="https://cdn.jsdelivr.net/npm/aframe-ar.js"></script>
-    
+
     <!-- WebXR Support for VR -->
     <script src="https://unpkg.com/aframe-xr-component@1.0.0/dist/aframe-xr-component.js"></script>
 
+    <style>
+      /* Center the choice buttons on the page */
+      #choice-screen {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        font-family: Arial, sans-serif;
+        color: white;
+        z-index: 100;
+      }
+
+      .choice-button {
+        background-color: #4CC3D9;
+        border: none;
+        color: white;
+        padding: 15px 30px;
+        margin: 10px;
+        font-size: 20px;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      /* Hide the choice screen after a selection */
+      #scene-container {
+        display: none;
+      }
+    </style>
   </head>
   <body style="margin: 0; overflow: hidden;">
-    <a-scene 
-      embedded 
-      vr-mode-ui
-      arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;">
-      
-      <!-- A simple 3D box that appears in both VR and AR -->
-      <a-box position="0 1.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
 
-      <!-- Camera for AR & VR modes (this is the default camera for both) -->
-      <a-camera></a-camera>
-    </a-scene>
+    <!-- Choice screen with buttons for VR and AR -->
+    <div id="choice-screen">
+      <h2>Select Mode</h2>
+      <button class="choice-button" id="vr-btn">VR Mode</button>
+      <button class="choice-button" id="ar-btn">AR Mode</button>
+    </div>
 
-    <!-- Instructions displayed for testing -->
-    <p style="position: fixed; bottom: 20px; left: 20px; font-size: 16px; color: white;">
-      Open this in the Meta Quest 3 browser for AR or VR mode.
-    </p>
+    <!-- The A-Frame scene container -->
+    <div id="scene-container">
+      <a-scene embedded vr-mode-ui id="scene" style="height: 100vh;">
+        
+        <!-- The 3D box -->
+        <a-box position="0 1.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
+
+        <!-- Camera for AR and VR -->
+        <a-camera></a-camera>
+        
+      </a-scene>
+    </div>
+
+    <script>
+      // Get elements
+      const vrButton = document.getElementById("vr-btn");
+      const arButton = document.getElementById("ar-btn");
+      const sceneContainer = document.getElementById("scene-container");
+      const choiceScreen = document.getElementById("choice-screen");
+      const scene = document.getElementById("scene");
+
+      // VR and AR button event listeners
+      vrButton.addEventListener("click", () => {
+        // Show the A-Frame scene for VR
+        choiceScreen.style.display = "none";
+        sceneContainer.style.display = "block";
+        // Enable VR mode (WebXR)
+        scene.setAttribute("xr-mode", "vr");
+      });
+
+      arButton.addEventListener("click", () => {
+        // Show the A-Frame scene for AR
+        choiceScreen.style.display = "none";
+        sceneContainer.style.display = "block";
+        // Enable AR mode with AR.js
+        scene.setAttribute("arjs", "sourceType: webcam; debugUIEnabled: false; trackingMethod: best;");
+      });
+    </script>
+
   </body>
 </html>
