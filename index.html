@@ -1,34 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <meta charset="utf-8">
-    <title>VR and AR Example with A-Frame</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VR & AR Example for Meta Quest 3</title>
 
-    <!-- A-Frame library -->
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <!-- A-Frame Library -->
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 
     <!-- AR.js for AR functionality -->
     <script src="https://cdn.jsdelivr.net/npm/aframe-ar.js"></script>
-
-    <!-- WebXR support (for VR) -->
+    
+    <!-- WebXR Support for VR -->
     <script src="https://unpkg.com/aframe-xr-component@1.0.0/dist/aframe-xr-component.js"></script>
 
   </head>
   <body style="margin: 0; overflow: hidden;">
-    <a-scene embedded vr-mode-ui arjs="sourceType: webcam; debugUIEnabled: false;">
-
-      <!-- VR/AR Environment -->
-      <!-- The scene's background comes from the camera when in AR mode -->
-
-      <!-- A simple 3D object (Box) that will be visible in AR/VR -->
+    <a-scene 
+      embedded 
+      vr-mode-ui
+      arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;">
+      
+      <!-- A simple 3D box that appears in both VR and AR -->
       <a-box position="0 1.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
 
-      <!-- The camera will automatically switch between AR and VR mode -->
+      <!-- Camera for AR & VR modes (this is the default camera for both) -->
       <a-camera></a-camera>
     </a-scene>
 
+    <!-- Instructions displayed for testing -->
     <p style="position: fixed; bottom: 20px; left: 20px; font-size: 16px; color: white;">
-      Use the browser's AR/VR functionality for Meta Quest 3.
+      Open this in the Meta Quest 3 browser for AR or VR mode.
     </p>
   </body>
 </html>
