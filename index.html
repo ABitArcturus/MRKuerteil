@@ -1,96 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VR or AR Scene for Meta Quest 3</title>
-
-    <!-- A-Frame Library -->
+    <title>My VR/AR App</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+	<script src="https://rawgit.com/jeromeetienne/ar.js/master/aframe/build/aframe-ar.js"></script>
 
-    <!-- AR.js for AR functionality -->
-    <script src="https://cdn.jsdelivr.net/npm/aframe-ar.js"></script>
-
-    <!-- WebXR Support for VR -->
-    <script src="https://unpkg.com/aframe-xr-component@1.0.0/dist/aframe-xr-component.js"></script>
-
-    <style>
-      /* Center the choice buttons on the page */
-      #choice-screen {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        font-family: Arial, sans-serif;
-        color: white;
-        z-index: 100;
-      }
-
-      .choice-button {
-        background-color: #4CC3D9;
-        border: none;
-        color: white;
-        padding: 15px 30px;
-        margin: 10px;
-        font-size: 20px;
-        cursor: pointer;
-        border-radius: 5px;
-      }
-
-      /* Hide the choice screen after a selection */
-      #scene-container {
-        display: none;
-      }
-    </style>
   </head>
-  <body style="margin: 0; overflow: hidden;">
+  <body>
+    <a-scene>
+      <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
+      <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
+      <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
+      <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
+      <a-sky color="#ECECEC"></a-sky>
+	  <a-marker preset="hiro">
+  <a-box position="0 0.5 0" material="color: red;"></a-box>
+</a-marker>
+<a-entity camera></a-entity>
 
-    <!-- Choice screen with buttons for VR and AR -->
-    <div id="choice-screen">
-      <h2>Select Mode</h2>
-      <button class="choice-button" id="vr-btn">VR Mode</button>
-      <button class="choice-button" id="ar-btn">AR Mode</button>
-    </div>
-
-    <!-- The A-Frame scene container -->
-    <div id="scene-container">
-      <a-scene embedded vr-mode-ui id="scene" style="height: 100vh;">
-        
-        <!-- The 3D box -->
-        <a-box position="0 1.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
-
-        <!-- Camera for AR and VR -->
-        <a-camera></a-camera>
-        
-      </a-scene>
-    </div>
-
-    <script>
-      // Get elements
-      const vrButton = document.getElementById("vr-btn");
-      const arButton = document.getElementById("ar-btn");
-      const sceneContainer = document.getElementById("scene-container");
-      const choiceScreen = document.getElementById("choice-screen");
-      const scene = document.getElementById("scene");
-
-      // VR and AR button event listeners
-      vrButton.addEventListener("click", () => {
-        // Show the A-Frame scene for VR
-        choiceScreen.style.display = "none";
-        sceneContainer.style.display = "block";
-        // Enable VR mode (WebXR)
-        scene.setAttribute("xr-mode", "vr");
-      });
-
-      arButton.addEventListener("click", () => {
-        // Show the A-Frame scene for AR
-        choiceScreen.style.display = "none";
-        sceneContainer.style.display = "block";
-        // Enable AR mode with AR.js
-        scene.setAttribute("arjs", "sourceType: webcam; debugUIEnabled: false; trackingMethod: best;");
-      });
-    </script>
-
+    </a-scene>
   </body>
 </html>
