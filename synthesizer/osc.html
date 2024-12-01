@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>oscillator</title>
+    <link rel="stylesheet" href="osc.css">
+</head>
+
+<body>
+    <div class="osc">
+        osc1
+        <div class="osc1Controls">
+            <button id="osc1TogglePlay">Play/Stop OSC1</button>
+            <label for="osc1Waveform">Waveform:</label>
+            <select id="osc1Waveform">
+                <option value="sine">Sine</option>
+                <option value="square">Square</option>
+                <option value="sawtooth">Sawtooth</option>
+                <option value="triangle">Triangle</option>
+            </select>
+            <label for="osc1Frequency">Frequency:</label>
+            <input type="range" id="osc1Frequency" min="20" max="20000" step="1" value="4000">
+            <span id="osc1FrequencyValue">4000</span> Hz
+            <label for="osc1Gain">Gain:</label>
+            <input type="range" id="osc1Gain" min="0" max="1" step="0.01" value="0.5">
+            <span id="osc1GainValue">0.5</span>
+            <div>
+                <label for="osc1Attack">Attack:</label>
+                <input type="range" id="osc1Attack" min="0" max="2" step="0.01" value="0">
+                <span id="osc1AttackValue">0</span> seconds
+            </div>
+            <div>
+                <label for="osc1Decay">Decay:</label>
+                <input type="range" id="osc1Decay" min="0" max="2" step="0.01" value="0">
+                <span id="osc1DecayValue">0</span> seconds
+            </div>
+            <div>
+                <label for="osc1Sustain">Sustain:</label>
+                <input type="range" id="osc1Sustain" min="0" max="1" step="0.01" value="1">
+                <span id="osc1SustainValue">1</span> seconds
+            </div>
+            <div>
+                <label for="osc1Release">Release:</label>
+                <input type="range" id="osc1Release" min="0" max="2" step="0.01" value="0">
+                <span id="osc1ReleaseValue">0</span> seconds
+            </div>
+            <div class="transpose-container">
+                <button id="osc1TransposeUp">Transpose Up</button>
+                <button id="osc1TransposeDown">Transpose Down</button>
+            </div>
+            <button id="osc1ToggleFreqMod">Toggle Frequency Modulator</button>
+            <label for="osc1FrequModGain">Modulator Gain:</label>
+            <input type="range" id="osc1FrequModGain" min="0" max="100" step="1" value="0">
+            <span id="osc1FrequModGainValue">0</span>
+            <label for="osc1FreqModFreq">Modulator Frequency:</label>
+            <input type="range" id="osc1FreqModFreq" min="0.1" max="100" step="0.1" value="2">
+            <span id="osc1FreqModFreqValue">2</span> Hz
+            <button id="toggleOSC1RingModFreq">Toggle Ring Modulator</button>
+            <label for="osc1RingModFreq">Ring Modulator Frequency:</label>
+            <input type="range" id="osc1RingModFreq" min="0" max="100" step="1" value="0">
+            <span id="osc1RingModFreqValue">0</span> Hz
+            <!-- ///////////////// noise -->
+            <div class="slider-container">
+                <label for="whiteNoiseGainSlider" class="slider-label">Noise Gain:</label>
+                <input type="range" id="whiteNoiseGainSlider" class="slider" min="0" max="1" step="0.01" value="0.5">
+                <span id="whiteNoiseGainValue">0.5</span>
+            </div>
+            <button id="startWhiteNoiseBttn">Start Noise</button>
+            <button id="stopWhiteNoiseBttn">Stop Noise</button>
+        </div>
+        <!-- ///////////////// OSC 2 -->
+        osc2
+        <div class="osc2Controls">
+            <button id="osc2TogglePlay">Play/Stop OSC2</button>
+            <label for="osc2Waveform">Waveform:</label>
+            <select id="osc2Waveform">
+                <option value="sine">Sine</option>
+                <option value="square">Square</option>
+                <option value="sawtooth">Sawtooth</option>
+                <option value="triangle">Triangle</option>
+            </select>
+            <label for="osc2Frequency">Frequency:</label>
+            <input type="range" id="osc2Frequency" min="20" max="20000" step="1" value="6000">
+            <span id="osc2FrequencyValue">6000</span> Hz
+            <label for="osc2Gain">Gain:</label>
+            <input type="range" id="osc2Gain" min="0" max="1" step="0.01" value="0">
+            <span id="osc2GainValue">0</span>
+            <div>
+                <label for="osc2Attack">Attack:</label>
+                <input type="range" id="osc2Attack" min="0" max="2" step="0.01" value="0">
+                <span id="osc2AttackValue">0</span> seconds
+            </div>
+            <div>
+                <label for="osc2Decay">Decay:</label>
+                <input type="range" id="osc2Decay" min="0" max="2" step="0.01" value="0">
+                <span id="osc2DecayValue">0</span> seconds
+            </div>
+            <div>
+                <label for="osc2Sustain">Sustain:</label>
+                <input type="range" id="osc2Sustain" min="0" max="1" step="0.01" value="1">
+                <span id="osc2SustainValue">1</span> seconds
+            </div>
+            <div>
+                <label for="osc2Release">Release:</label>
+                <input type="range" id="osc2Release" min="0" max="2" step="0.01" value="0">
+                <span id="osc2ReleaseValue">0</span> seconds
+            </div>
+            <div class="transpose-container">
+                <button id="osc2TransposeUp">Transpose Up</button>
+                <button id="osc2TransposeDown">Transpose Down</button>
+            </div>
+            <button id="osc2ToggleFreqMod">Toggle Frequency Modulator</button>
+            <label for="osc2FrequModGain">Modulator Gain:</label>
+            <input type="range" id="osc2FrequModGain" min="0" max="100" step="1" value="0">
+            <span id="osc2FrequModGainValue">0</span>
+            <label for="osc2FreqModFreq">Modulator Frequency:</label>
+            <input type="range" id="osc2FreqModFreq" min="0.1" max="100" step="0.1" value="2">
+            <span id="osc2FreqModFreqValue">2</span> Hz
+            <button id="toggleOSC2RingModFreq">Toggle Ring Modulator</button>
+            <label for="osc2RingModFreq">Ring Modulator Frequency:</label>
+            <input type="range" id="osc2RingModFreq" min="0" max="100" step="1" value="0">
+            <span id="osc2RingModFreqValue">0</span> Hz
+        </div>
+    </div>
+    <div class="fader-container">
+        80 Hz<input type="range" min="-12" max="12" value="0" class="fader" id="eqBand1">
+        160 Hz<input type="range" min="-12" max="12" value="0" class="fader" id="eqBand2">
+        250 Hz<input type="range" min="-12" max="12" value="0" class="fader" id="eqBand3">
+        500 Hz<input type="range" min="-12" max="12" value="0" class="fader" id="eqBand4">
+        900 Hz<input type="range" min="-12" max="12" value="0" class="fader" id="eqBand5">
+        1500 Hz<input type="range" min="-12" max="12" value="0" class="fader" id="eqBand6">
+        2500 Hz<input type="range" min="-12" max="12" value="0" class="fader" id="eqBand7">
+        3200 Hz<input type="range" min="-12" max="12" value="0" class="fader" id="eqBand8">
+    </div>
+    <canvas id="analyserCanvas"></canvas>
+
+
+    <script type="module" src="./audioProcessing/oscController.js"></script>
+    <script type="module" src="./audioProcessing/equalizer.js"></script>
+    <script type="module" src="./bttnController.js"></script>
+    <script type="module" src="./audioProcessing/analyser.js"></script>
+</body>
+
+</html>
