@@ -10,6 +10,7 @@ document.getElementById("startXR-Bttn").addEventListener("click", activateXR);
 /* onclick-Callback-Funktion ohne () übergeben. Der Grund dafür ist, dass du die Funktion nur als Referenz übergeben möchtest, 
 damit sie bei einem Klick ausgeführt wird. Wenn du activateXR() mit () schreibst, wird die Funktion sofort aufgerufen, wenn der 
 Code ausgeführt wird, statt auf das Klick-Ereignis zu warten. */
+console.log("test");
 
 async function activateXR() {
   // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
