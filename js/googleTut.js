@@ -1,3 +1,5 @@
+document.getElementById("startXR-Bttn").addEventListener("click", activateXR());
+
 async function activateXR() {
   // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
   const canvas = document.createElement("canvas");
