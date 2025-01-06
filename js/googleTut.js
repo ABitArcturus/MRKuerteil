@@ -1,4 +1,15 @@
-document.getElementById("startXR-Bttn").addEventListener("click", activateXR());
+/* 
+ https://developers.google.com/ar/develop/webxr/hello-webxr */
+
+/* Starting an immersive WebXR session requires user interaction.
+  We start this one with a simple button. */
+  {/* <button onclick="activateXR()">Start Hello WebXR</button> */}
+
+
+document.getElementById("startXR-Bttn").addEventListener("click", activateXR);
+/* onclick-Callback-Funktion ohne () übergeben. Der Grund dafür ist, dass du die Funktion nur als Referenz übergeben möchtest, 
+damit sie bei einem Klick ausgeführt wird. Wenn du activateXR() mit () schreibst, wird die Funktion sofort aufgerufen, wenn der 
+Code ausgeführt wird, statt auf das Klick-Ereignis zu warten. */
 
 async function activateXR() {
   // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
