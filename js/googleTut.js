@@ -13,6 +13,7 @@ Code ausgeführt wird, statt auf das Klick-Ereignis zu warten. */
 console.log("test");
 
 async function activateXR() {
+  console.log("activateXR");
   // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
   const canvas = document.createElement("canvas");
   document.body.appendChild(canvas);
