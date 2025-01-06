@@ -3,44 +3,156 @@
 
 /* Starting an immersive WebXR session requires user interaction.
   We start this one with a simple button. */
-  {/* <button onclick="activateXR()">Start Hello WebXR</button> */}
+{/* <button onclick="activateXR()">Start Hello WebXR</button> */ }
 
+let xrMode = null;
 
-document.getElementById("startXR-Bttn").addEventListener("click", activateXR);
+document.getElementById("startAR-Bttn").addEventListener("click", () => {
+  initXR("ar");
+});
 /* onclick-Callback-Funktion ohne () übergeben. Der Grund dafür ist, dass du die Funktion nur als Referenz übergeben möchtest, 
 damit sie bei einem Klick ausgeführt wird. Wenn du activateXR() mit () schreibst, wird die Funktion sofort aufgerufen, wenn der 
 Code ausgeführt wird, statt auf das Klick-Ereignis zu warten. */
-console.log("test");
 
-async function activateXR() {
-  console.log("activateXR");
-  // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
-  const canvas = document.createElement("canvas");
+document.getElementById("startVR-Bttn").addEventListener("click", () => {
+  initXR("vr");
+});
+
+//  globals.
+let gl = null;
+let renderer = null;
+let scene = null;
+const canvas = document.createElement("canvas");
+let isInlineSession = null;
+let session = null;
+let mode = null;
+
+async function initXR(newMode) {
+  mode = newMode;
+
+  if (navigator.xr) {
+    /* navigator.xr = globales objekt
+     */
+    navigator.xr.isSessionSupported('immersive-vr').then((xrSupported) => {
+      console.log("vr supported: ", xrSupported);
+    });
+
+    navigator.xr.isSessionSupported('immersive-ar').then((xrSupported) => {
+      console.log("ar supported: ", xrSupported);
+    });
+
+    // Start up an inline session, which should always be supported on
+    // browsers that support WebXR regardless of the available hardware.
+    navigator.xr.requestSession('inline').then(
+      (isSession) => {
+        // true or false
+        isInlineSession = isSession;
+      });
+
+
+
+  }
+
   document.body.appendChild(canvas);
-  const gl = canvas.getContext("webgl", { xrCompatible: true });
 
-  const scene = new THREE.Scene();
+  // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
+  gl = canvas.getContext("webgl", { xrCompatible: true });
+
+
+  /* Inline-Session bezieht sich auf eine WebXR-Session, bei der der Inhalt direkt im Browserfenster (also ohne VR- oder AR-Headset) angezeigt wird
+  
+  Für AR auf mobilen Geräten:
+  
+      Wenn du AR auf mobilen Geräten umsetzen möchtest, insbesondere auf Geräten ohne AR-Headset (wie Smartphones oder Tablets), dann ist eine Inline-Session notwendig. Das bedeutet, dass der AR-Inhalt direkt auf dem Bildschirm des Geräts angezeigt wird, anstatt in einer immersiven AR-Umgebung.
+      
+      Für Web-basierte VR-Ansichten ohne Headset:
+  
+      Wenn du VR auf einem Desktop oder mobilen Gerät ohne ein VR-Headset starten möchtest, könnte eine Inline-Session sinnvoll sein. Das bedeutet, der VR-Inhalt wird direkt auf dem Bildschirm angezeigt, z. B. durch die Nutzung von 3D-Objekten, die vom Benutzer in der 3D-Umgebung mit der Maus oder Touch-Steuerung navigiert werden können.
+      
+      */
+
+
+  onRequestSession();
+  //performance besser außerhalb der Funktion? bzgl stack
+
+}
+
+
+
+function onRequestSession() {
+
+  if (mode == "vr") {
+    console.log("VR wurde aktiviert.");
+    return navigator.xr.requestSession('immersive-vr').then((isSession) => {
+      session = isSession;
+      session.isImmersive = true;
+      //activateAR(session);
+    });
+
+  } else if (mode == "ar") {
+    console.log("AR wurde aktiviert.");
+    return navigator.xr.requestSession('immersive-vr').then((isSession) => {
+      session = isSession;
+      session.isImmersive = true;
+      activateAR();
+    });
+  }
+
+}
+
+
+async function activateVR() {
+  console.log("activateVR");
+
+  //console.log(currentSession);
+
+
+}
+
+async function activateAR() {
+  console.log("activateAR");
+  // console.log(currentSession);
+
+  scene = new THREE.Scene();
   /////////////////////////////////////// 2nd step
   // init 3js
 
   // The cube will have a different color on each side.
-  const materials = [
+/*   const materials = [
     new THREE.MeshBasicMaterial({ color: 0xff0000 }),
     new THREE.MeshBasicMaterial({ color: 0x0000ff }),
     new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
     new THREE.MeshBasicMaterial({ color: 0xff00ff }),
     new THREE.MeshBasicMaterial({ color: 0x00ffff }),
     new THREE.MeshBasicMaterial({ color: 0xffff00 })
-  ];
+  ]; */
 
   // Create the cube and add it to the demo scene.
-  const cube = new THREE.Mesh(new THREE.BoxBufferGeometry(0.2, 0.2, 0.2), materials);
+  /* const cube = new THREE.Mesh(new THREE.BoxBufferGeometry(0.2, 0.2, 0.2), materials);
   cube.position.set(1, 1, 1);
-  scene.add(cube);
+  scene.add(cube); */
+
+
+ // 2. Erstelle ein großes Objekt (eine leuchtende Kugel), das als unübersehbar betrachtet werden kann.
+ const largeSphere = new THREE.Mesh(
+  new THREE.SphereBufferGeometry(1), // Große Kugel mit Radius 1
+  new THREE.MeshStandardMaterial({
+    color: 0xff0000, 
+    emissive: 0xff0000, // Leuchtende rote Farbe
+    emissiveIntensity: 1, // Stärke der Leuchtung
+    roughness: 0, // Für mehr Glanz
+    metalness: 0 // Kein Metall-Effekt
+  })
+);
+largeSphere.position.set(0, 0, -3); // Positioniere die Kugel vor der Kamera, aber etwas weiter entfernt
+scene.add(largeSphere);
+
+
+
   //////////////////////////////////////// 3rd step
 
   // Set up the WebGLRenderer, which handles rendering to the session's base layer.
-  const renderer = new THREE.WebGLRenderer({
+  renderer = new THREE.WebGLRenderer({
     alpha: true,
     preserveDrawingBuffer: true,
     canvas: canvas,
@@ -58,7 +170,8 @@ async function activateXR() {
 
   ///////////////////////////////////// 4th step
   // Initialize a WebXR session using "immersive-ar".
-  const session = await navigator.xr.requestSession("immersive-ar");
+  // const session = await navigator.xr.requestSession("immersive-ar");
+  // in init ausgelagert
   session.updateRenderState({
     baseLayer: new XRWebGLLayer(session, gl)
   });
