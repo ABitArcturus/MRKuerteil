@@ -47,7 +47,7 @@
     });
   </script>
 </body>
-</html> -->
+</html>
 
 <!-- supposed to be ar but didnt work -->
 <!-- <!DOCTYPE html>
@@ -84,55 +84,38 @@
 </body>
 </html> -->
 
-<!DOCTYPE html>
-<html lang="en">
+
+<!doctype HTML>
+<html>
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>22 AR.js Cube Interaction</title>
-
-  <script src="https://aframe.io/releases/0.6.0/aframe.min.js"></script>
-  <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
-
-
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 </head>
+<script src="https://aframe.io/releases/0.9.0/aframe.min.js"></script>
+<script src="https://rawgit.com/jeromeetienne/AR.js/master/aframe/build/aframe-ar.min.js"></script>
+<script src="https://rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
 
-<body style="margin: 0; overflow: hidden;">
+<body style='margin : 0px; overflow: hidden;'>
+  <a-scene embedded
+    arjs='sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'>
 
-  <body style='margin : 0px; overflow: hidden;'>
-    <a-scene embedded arjs='sourceType: webcam;'>
-      <!-- handle marker with your own pattern -->
-      <a-marker type='pattern' patternUrl='path/to/pattern-marker.patt'>
-        <a-box position='0 0.5 0' material='color: red;'></a-box>
-      </a-marker>
+    <a-assets>
+      <a-asset-item id="animated-asset"
+        src="https://raw.githubusercontent.com/nicolocarpignoli/nicolocarpignoli.github.io/master/ar-playground/models/CesiumMan.gltf"></a-asset-item>
+    </a-assets>
 
-      <!-- handle marker with hiro preset -->
-      <a-marker preset='hiro'>
-        <a-box position='0 0.5 0' material='color: green;'></a-box>
-      </a-marker>
+    <a-marker type='barcode' value='7'>
+      <a-box position='0 0.5 0' color="yellow"></a-box>
+    </a-marker>
 
-      <!-- handle barcode marker -->
-      <a-marker type='barcode' value='5'>
-        <a-box position='0 0.5 0' material='color: blue;'></a-box>
-      </a-marker>
+    <a-marker id="animated-marker" type='barcode' value='6'>
+      <a-entity gltf-model="#animated-asset" scale="2">
+      </a-entity>
+    </a-marker>
 
-      <!-- Camera with custom FOV -->
-      <a-camera position="0 0 0" fov="90"></a-camera>
-    </a-scene>
-  </body>
-
-  <script>
-    // Handle the cube click event to change color
-    const cube = document.querySelector("#cube");
-
-    cube.addEventListener("click", function () {
-      const currentColor = cube.getAttribute("color");
-      // Toggle between two colors for simplicity
-      const newColor = currentColor === "#4CC3D9" ? "#FF5733" : "#4CC3D9";
-      cube.setAttribute("color", newColor);
-    });
-  </script>
+    <a-entity camera></a-entity>
+  </a-scene>
+  
 </body>
 
 </html>
