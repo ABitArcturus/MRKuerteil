@@ -11,10 +11,7 @@ async function activateAR() {
       new THREE.SphereGeometry(1), // Große Kugel mit Radius 1
       new THREE.MeshStandardMaterial({
         color: 0xff0000,
-        emissive: 0xff0000, // Leuchtende rote Farbe
-        emissiveIntensity: 1, // Stärke der Leuchtung
-        roughness: 0, // Für mehr Glanz
-        metalness: 0 // Kein Metall-Effekt
+   
       })
     );
     largeSphere.position.set(0, 0, -3); // Positioniere die Kugel vor der Kamera, aber etwas weiter entfernt
@@ -22,7 +19,6 @@ async function activateAR() {
   
   
   
-    //////////////////////////////////////// 3rd step
   
     // Set up the WebGLRenderer, which handles rendering to the session's base layer.
     xrGlobals.renderer = new THREE.WebGLRenderer({

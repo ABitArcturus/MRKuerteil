@@ -11,10 +11,23 @@
 
 <body style='margin : 0px; overflow: hidden;'>
   <a-scene embedded arjs>
-    <a-box position='0 0.5 0' material='opacity: 1;'></a-box>
+    <a-box id="cube" position="0 0.5 0" color="#669999" shadow="receive: true" class="clickable"
+      click-color-change="colorOnClick: #FF0000"></a-box>
     <a-marker-camera preset='hiro'></a-marker-camera>
   </a-scene>
-
+  <script>
+    AFRAME.registerComponent('click-color-change', {
+      schema: {
+        colorOnClick: { type: 'color', default: '#FF0000' }
+      },
+      init: function () {
+        this.el.addEventListener('click', () => {
+          console.log("click-color-change triggered");
+          this.el.setAttribute('color', this.data.colorOnClick);
+        });
+      }
+    });
+  </script>
 </body>
 
 </html> 
