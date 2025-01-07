@@ -1,5 +1,5 @@
-import xrGlobals from "./xrGlobals";
-import * as THREE from "three";
+import xrGlobals from "./xrGlobals.js";
+import * as THREE from "../node_modules/three/build/three.module.js";
 
 
 async function activateVR() {
@@ -13,22 +13,23 @@ async function activateVR() {
     xrGlobals.scene = new THREE.Scene();
 
 
-    const geometry = new THREE.BoxBufferGeometry(0.5, 0.5, 0.5);  // Ein Würfel mit Seitenlängen von 0.5
+    const geometry = new THREE.BufferGeometry(0.5, 0.5, 0.5);  // Ein Würfel mit Seitenlängen von 0.5
+
+
     const material = new THREE.MeshBasicMaterial({
         color: 0x00ff00,  // Grüne Farbe
-        emissive: 0x00ff00,  // Leuchtende Farbe
-        emissiveIntensity: 1  // Leuchtintensität
+       
     });
 
 
     const cube = new THREE.Mesh(geometry, material);
     cube.position.set(0, 0, -2);  // Positioniere den Würfel vor der Kamera
-    scene.add(cube);
+    xrGlobals.scene.add(cube);
 
 
     // 4. Einen Renderer erstellen, wenn er noch nicht existiert
-    const renderer = new THREE.WebGLRenderer({ canvas });
-    renderer.autoClear = false;
+    xrGlobals.renderer = new THREE.WebGLRenderer({ canvas: xrGlobals.canvas });
+    xrGlobals.renderer.autoClear = false;
 
     // 5. Eine Kamera erstellen, wenn sie noch nicht existiert
     const camera = new THREE.PerspectiveCamera();
@@ -38,7 +39,7 @@ async function activateVR() {
     const referenceSpace = await xrGlobals.session.requestReferenceSpace('local');
 
     // 7. Den WebXR-Renderer mit einer VR-BaseLayer aktualisieren
-   xrGlobals.session.updateRenderState({
+    xrGlobals.session.updateRenderState({
         baseLayer: new XRWebGLLayer(xrGlobals.session, xrGlobals.gl)
     });
 
@@ -47,7 +48,7 @@ async function activateVR() {
         console.log("onXRFrame");
         xrGlobals.session.requestAnimationFrame(onXRFrame);
 
-       
+
         // Die Pose des Geräts abrufen
         const pose = frame.getViewerPose(referenceSpace);
         if (pose) {
@@ -55,7 +56,7 @@ async function activateVR() {
 
             // Den Viewport basierend auf den aktuellen XR-Daten setzen
             const viewport = xrGlobals.session.renderState.baseLayer.getViewport(view);
-            renderer.setSize(viewport.width, viewport.height);
+            xrGlobals.renderer.setSize(viewport.width, viewport.height);
 
             // Die Transformations- und Projektionsmatrix der Kamera aktualisieren
             camera.matrix.fromArray(view.transform.matrix);
@@ -63,10 +64,12 @@ async function activateVR() {
             camera.updateMatrixWorld(true);
 
             // Die Szene rendern
-            renderer.render(scene, camera);
+            xrGlobals.renderer.render(xrGlobals.scene, camera);
         }
     };
 
     // Die Render-Schleife starten
     xrGlobals.session.requestAnimationFrame(onXRFrame);
 }
+
+export { activateVR };

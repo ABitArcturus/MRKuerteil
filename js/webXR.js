@@ -1,6 +1,6 @@
-import xrGlobals from "./xrGlobals";
-import { activateVR } from "./vr";
-import { activateAR } from "./ar";
+import xrGlobals from "./xrGlobals.js";
+import { activateVR } from "./vr.js";
+import { activateAR } from "./ar.js";
 // https://developers.google.com/ar/develop/webxr/hello-webxr
 
 
@@ -22,15 +22,11 @@ async function initXR(newMode) {
   // check webXR support
   if (!navigator.xr) {
     // navigator.xr = globales objekt
-    alert("This browser does not support WebXR.");
+    console.log("This browser does not support WebXR.");
     return;
   }
 
-  // check webGL support
-  if (!xrGlobals.gl) {
-    alert("This browser does not support WebGL");
-    return;
-  }
+ 
 
   const vrSupported = await navigator.xr.isSessionSupported('immersive-vr');
   if (vrSupported) {
@@ -46,14 +42,18 @@ async function initXR(newMode) {
     console.log("ar not supported");
   }
 
-  const canvas = document.createElement("canvas");
+  xrGlobals.canvas = document.createElement("canvas");
 
   // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
-  xrGlobals.gl = canvas.getContext("webgl", { xrCompatible: true });
+  xrGlobals.gl = xrGlobals.canvas.getContext("webgl2", { xrCompatible: true });
+ // check webGL support
+ if (!xrGlobals.gl) {
+  console.log("This browser does not support WebGL");
+  return;
+}
 
-
-  canvas.style = "position: absolute; width: 100%; height: 100%; left: 0; top: 0; right: 0; bottom: 0; margin: 0; z-index: -1;"; // we add a simple style to our canvas
-  document.body.appendChild(canvas);
+xrGlobals.canvas.style = "position: absolute; width: 100%; height: 100%; left: 0; top: 0; right: 0; bottom: 0; margin: 0; z-index: -1;"; // we add a simple style to our canvas
+  document.body.appendChild(xrGlobals.canvas);
 
 
   if (xrGlobals.xrMode == "vr") {
