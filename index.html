@@ -49,10 +49,9 @@
 </body>
 </html> -->
 
-
-<!DOCTYPE html>
+<!-- supposed to be ar but didnt work -->
+<!-- <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -83,4 +82,64 @@
     });
   </script>
 </body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AR.js Cube Interaction</title>
+
+    <script src="https://aframe.io/releases/0.9.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+      #scene {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body style="margin: 0; overflow: hidden;">
+    <a-scene
+      embedded
+      arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;"
+      id="scene"
+    >
+      <!-- Define the marker -->
+      <a-marker preset="hiro">
+        <!-- Define the cube -->
+        <a-box
+          position="0 0.5 0"
+          rotation="0 45 0"
+          color="#4CC3D9"
+          scale="1 1 1"
+          id="cube"
+          event-set__mouseenter="_event: mouseenter; color: #F00"
+          event-set__mouseleave="_event: mouseleave; color: #4CC3D9"
+          class="interactive-cube"
+        ></a-box>
+      </a-marker>
+
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+      // Handle the cube click event to change color
+      const cube = document.querySelector("#cube");
+
+      cube.addEventListener("click", function () {
+        const currentColor = cube.getAttribute("color");
+        // Toggle between two colors for simplicity
+        const newColor = currentColor === "#4CC3D9" ? "#FF5733" : "#4CC3D9";
+        cube.setAttribute("color", newColor);
+      });
+    </script>
+  </body>
 </html>
