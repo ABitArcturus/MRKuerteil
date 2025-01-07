@@ -14,6 +14,9 @@
     <a-box id="cube" position="0 0.5 0" color="#669999" shadow="receive: true" class="clickable"
       click-color-change="colorOnClick: #FF0000"></a-box>
     <a-marker-camera preset='hiro'></a-marker-camera>
+    <a-camera>
+      <a-cursor color="#FF0000" fuse="false" raycaster="objects: .clickable"></a-cursor>
+    </a-camera>
   </a-scene>
   <script>
     AFRAME.registerComponent('click-color-change', {
