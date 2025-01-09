@@ -1,0 +1,14 @@
+.osc {
+    display: flex;
+
+}
+
+.slider {
+    width: 100%;
+}
+
+#analyserCanvas {
+    width: 100%;
+    height: 200px;
+    background-color: #333;
+}
