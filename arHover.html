@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>ar hover</title>
+  <meta name="description" content="Hello, World! - A-Frame">
+  <script src="https://aframe.io/releases/0.6.0/aframe.min.js"></script>
+  <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
+</head>
+
+<body style='margin : 0px; overflow: hidden;'>
+  
+  <a-scene>
+
+  <!-- Floor plane -->
+  <a-plane position="0 0 -5" rotation="-90 0 0" width="10" height="10" color="#4CC3D9"></a-plane>
+
+
+
+
+  <a-camera>
+    <a-cursor></a-cursor>
+  </a-camera>
+
+
+  <a-entity id="cube" position="0 2 -5" geometry="primitive: box" material="color: blue"
+    events="mouseenter: onHover; mouseleave: onLeave"></a-entity>
+
+
+
+</a-scene>
+<script>
+  // Get the cube entity
+  const cube = document.querySelector("#cube");
+
+  // Define hover behavior
+  cube.addEventListener("mouseenter", function () {
+    console.log("Cursor is hovering over the cube!");
+    cube.setAttribute("material", "color", "red"); // Change color to red on hover
+  });
+
+  cube.addEventListener("mouseleave", function () {
+    console.log("Cursor left the cube.");
+    cube.setAttribute("material", "color", "blue"); // Change color back to blue when cursor leaves
+  });
+</script>
+
+</body>
+
+</html>

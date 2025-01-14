@@ -3,7 +3,7 @@ import { OSC_Controller } from "./audioProcessing/oscController.js";
 import { startWhiteNoise, stopWhiteNoise, setWhiteNoiseGain } from "./audioProcessing/whiteNoiseGen.js";
 import { setEQGain } from "./audioProcessing/equalizer.js";
 
-const controllers = [];
+const controllers = [], controllers2 = [];
 const isOSCPlaying = [];
 
 for (let i = 0; i < 7; i++) {
@@ -19,6 +19,18 @@ for (let i = 0; i < 7; i++) {
 
     controllers.push(controller);
     isOSCPlaying.push(false);
+
+    const controller2 = new OSC_Controller();
+    controller2.setOSCAttack(0.05)
+    controller2.setOSCRelease(0.1)
+
+    /* controller.setOSCWaveform("square"); */
+    /* controller.setOSCWaveform("triangle"); */
+    controller2.setOSCWaveform("sawtooth");
+    controller2.setOSCFrequModGain(50);
+    controller2.setOSCFreqModFreq(5.3);
+
+    controllers2.push(controller);
 }
 
 controllers[0].setOSCFrequency(261);
@@ -60,7 +72,31 @@ controllers[5].setOSCWaveform("triangle"); */
 controllers[6].setOSCFrequency(987);
 /* controllers[6].setOSCFrequModGain(50);*/
 controllers[6].setOSCFreqModFreq(15);
-controllers[6].setOSCWaveform("square"); 
+controllers[6].setOSCWaveform("square");
+
+//
+controllers2[0].setOSCFrequency(261);
+
+
+controllers2[1].setOSCFrequency(587);
+controllers2[1].setOSCWaveform("triangle");
+
+controllers2[2].setOSCFrequency(659);
+controllers2[2].setOSCWaveform("sine");
+
+controllers2[3].setOSCFrequency(698);
+
+controllers2[3].toggleOSCRingModFreq();
+
+controllers2[4].setOSCFrequency(784);
+controllers2[4].setOSCWaveform("triangle");
+
+controllers2[5].setOSCFrequency(880);
+
+
+controllers2[6].setOSCFrequency(987);
+controllers2[6].setOSCFreqModFreq(15);
+controllers2[6].setOSCWaveform("square");
 
 
 
@@ -395,8 +431,45 @@ window.addEventListener("keyup", (event) => {
                 isOSCPlaying[6] = false;
             }
             break;
+        case " ":
+            isRunning = !isRunning;
+            run();
+            break;
 
         default:
             return;
     }
 });
+
+
+let isRunning = false;
+
+let waitingTime = 400;
+let counter = 0;
+let reverse = controllers2.length - 1;
+
+function run() {
+
+
+    if (isRunning) {
+        stop();
+
+        if (counter >= controllers2.length) {
+            counter = 0;
+        }
+        controllers2[counter].playOSC();
+        counter++;
+
+        setTimeout(() => {
+            run();
+        }, waitingTime);
+    } else {
+        counter = 0;
+        stop();
+    }
+    function stop() {
+        for (let i = 0; i < controllers2.length; i++) {
+            controllers2[i].stopOSC();
+        }
+    }
+}

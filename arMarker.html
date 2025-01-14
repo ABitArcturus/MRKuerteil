@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>ar wit marker</title>
+  <meta name="description" content="Hello, World! - A-Frame">
+  <script src="https://aframe.io/releases/0.6.0/aframe.min.js"></script>
+  <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
+</head>
+
+<body style='margin : 0px; overflow: hidden;'>
+  <script>
+    let visible = false;
+    let worldPosition = new THREE.Vector3();
+    /* 
+    <a-entity>.object3D is a reference to the entity’s three.js Object3D representation. 
+    https://threejs.org/docs/#api/en/core/Object3D */
+
+    AFRAME.registerComponent('amarkername', {
+      schema: {
+      },
+      init: function () {
+
+        this.el.addEventListener('markerFound', () => {
+          visible = this.el.object3D.visible;
+
+          run();
+        });
+        this.el.addEventListener('markerLost', () => { });
+      },
+
+      tick: function () {
+        visible = this.el.object3D.visible;
+
+        /*         this.el.object3D.lookAt(worldPosition);
+         */
+        worldPosition = this.el.object3D.position;
+
+
+      }
+    });
+
+    document.addEventListener('touchstart', () => {
+      console.log('Screen tapped!');
+      document.appendChild(document.createElement('a-box'));
+
+    });
+
+    AFRAME.registerComponent('click-color-change', {
+      schema: {
+        colorOnClick: { type: 'color', default: '#FF0000' }
+      },
+      init: function () {
+        this.el.addEventListener('click', () => {
+          console.log("click-color-change triggered");
+          this.el.setAttribute('color', this.data.colorOnClick);
+        });
+      }
+    });
+    function run() {
+
+      if (visible) {
+        const x = Math.floor(worldPosition.x * 100) / 100,
+          y = Math.floor(worldPosition.y * 100) / 100,
+          z = Math.floor(worldPosition.z * 100) / 100
+        position = '' + x + ' ' + y + ' ' + z;
+
+        console.log(position);
+
+      } else {
+        console.log("nein");
+        return
+      }
+      setTimeout(run, 500);
+
+    }
+
+  </script>
+
+
+
+  <a-scene embedded arjs>
+    <a-box id="cube" position="0 0.5 0" color="#669999" shadow="receive: true" class="clickable"
+      click-color-change="colorOnClick: #FF0000"></a-box>
+    <a-marker-camera preset='hiro'></a-marker-camera>
+    <!--  <a-camera>
+      <a-cursor color="#FF0000" fuse="false" raycaster="objects: .clickable"></a-cursor>
+    </a-camera> -->
+
+
+    <a-marker amarkername type="pattern" url="./ar-markers/pattern-sine.patt">
+      <a-entity geometry="primitive: box; height: 1; width: 1; depth: 1" material="color: red;">
+      </a-entity>
+    </a-marker>
+
+
+  </a-scene>
+
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>A-Frame Cube Look Detection</title>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="./js/triggerByLookJS.js"></script>
+
+</head>
+
+
+<body>
+    <a-scene>
+        <a-box name="hoverColor: #ff8367" color="#ff3104" position="0 1 -4"
+            class="clickable"></a-box>
+
+        <a-camera>
+            <a-cursor color="#FF0000" fuse="false" raycaster="objects: .clickable"></a-cursor>
+        </a-camera>
+    </a-scene>
+</body>
+
+</html>
