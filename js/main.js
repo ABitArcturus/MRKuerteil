@@ -159,7 +159,7 @@ let rotationY, rotationYGap = 15;
 const rotationsY = [];
 
 // distance to other buttons
-let distanceUp = 10, distanceDown = 10;
+let distanceUp = 1, distanceDown = 10;
 
 // saving the xyz coordinates of the keys
 for (let i = 0; i < totalNumberOfKeys; i++) {
@@ -186,22 +186,17 @@ AFRAME.registerComponent('tone-key', {//keine großbuchstaben nutzen, sonst funz
   init: function () {
     const el = this.el;
     const normalSize = "" + el.getAttribute('scale').x + " " + el.getAttribute('scale').y + " " + el.getAttribute('scale').z;
-    const defaultColor = el.getAttribute('color');;
+    const defaultColor = el.getAttribute('color');
     const hoverColor = this.data.hoverColor;
     let beingClicked = false;
 
     el.setAttribute('position', `${positionsX[this.data.oscIndex]} ${positionY} ${positionsZ[this.data.oscIndex]}`);
     el.setAttribute('rotation', `0 ${rotationsY[this.data.oscIndex]} 0`);
-    
-    
+
+
     // Zugriff auf den Controller und OSC je nach Index
     const controllerIndex = this.data.oscIndex;
     const isPlaying = isOSCPlaying[this.data.oscIndex];
-
-
-
-
-
 
     // Event Listener für mouse / touch Events
     el.addEventListener('mousedown', () => {
@@ -259,9 +254,66 @@ AFRAME.registerComponent('tone-key', {//keine großbuchstaben nutzen, sonst funz
   }
 });
 AFRAME.registerComponent('sinewave-box', {
+  schema: {
+    sinewave: { type: 'string', default: 'oscIndex: 0' },
+    oscIndex: { type: 'int' },
+    color: { /* set in html */ },
+    hoverColor: { default: '#e5bbbb' },
+    normalSize: { default: "0.4 0.4 0.1" }
+  },
+
+  init: function () {
+    const el = this.el,
+      box = el.querySelector('a-box'),
+      normalSize = this.data.normalSize,
+      defaultColor = box.getAttribute('color'),
+      hoverColor = this.data.hoverColor,
+      text = el.querySelector('a-text');
+
+    const currentIndex = box.getAttribute('oscIndex');
+
+
+    // positioning
+    /*  box.setAttribute('position', `${positionsX[this.data.oscIndex]} ${positionY + distanceUp} ${positionsZ[this.data.oscIndex]}`);
+     box.setAttribute('rotation', `0 ${rotationsY[this.data.oscIndex]} 0`);
+  */
+
+    const waveforms = ["sine", "square", "sawtooth", "triangle"];
+    let currentWaveform = 0;
+
+    el.addEventListener('mouseenter', () => {
+      isHovering = true;
+      box.setAttribute('color', hoverColor);
+      box.setAttribute('animation', {
+        property: 'scale',
+        to: '0.4 0.4 0.2',
+        dur: 50
+      });
+
+
+      controllers[currentIndex].setOSCWaveform(waveforms[currentWaveform]);
+      controllers2[currentIndex].setOSCWaveform(waveforms[currentWaveform]);
+
+
+      currentWaveform = (currentWaveform + 1) % waveforms.length;
+/*       text.setAttribute('value', 'New Sine Value');
+ */
+    });
+
+    /*  el.addEventListener('mouseleave', () => {
+       isHovering = false;
+       el.setAttribute('color', defaultColor);
+       el.setAttribute('animation', {
+         property: 'scale',
+         to: normalSize,
+         dur: 50
+       });
+ 
+     }); */
+  }
 
 });
-AFRAME.registerComponent('sinewave', {
+AFRAME.registerComponent('sinewavee', {
   schema: {
     oscIndex: { type: 'int' },
     color: { /* set in html */ },
@@ -269,20 +321,20 @@ AFRAME.registerComponent('sinewave', {
   },
 
   init: function () {
-    const el = this.el;
-    const normalSize = "" + el.getAttribute('scale').x + " " + el.getAttribute('scale').y + " " + el.getAttribute('scale').z;
-    const defaultColor = el.getAttribute('color');;
-    const hoverColor = this.data.hoverColor;
+    const el = this.el,
+      normalSize = "" + el.getAttribute('scale').x + " " + el.getAttribute('scale').y + " " + el.getAttribute('scale').z,
+      defaultColor = el.getAttribute('color'),
+      hoverColor = this.data.hoverColor,
+      controllerIndex = this.data.oscIndex,
+      textEntity = el.querySelector('a-text');
 
-    const controllerIndex = this.data.oscIndex;
+    // positioning
+    el.setAttribute('position', `${positionsX[this.data.oscIndex]} ${positionY + distanceUp} ${positionsZ[this.data.oscIndex]}`);
+    el.setAttribute('rotation', `0 ${rotationsY[this.data.oscIndex]} 0`);
 
 
     const waveforms = ["sine", "square", "sawtooth", "triangle"];
     let currentIndex = 0;
-
-    // positioning
-    /* el.setAttribute('position', `${positionsX[this.data.oscIndex]} ${positionY + 0.8} ${positionsZ[this.data.oscIndex]}`); */
-
 
     el.addEventListener('mouseenter', () => {
       isHovering = true;
@@ -297,10 +349,10 @@ AFRAME.registerComponent('sinewave', {
       controllers[controllerIndex].setOSCWaveform(waveforms[currentIndex]);
       controllers2[controllerIndex].setOSCWaveform(waveforms[currentIndex]);
 
-
       currentIndex = (currentIndex + 1) % waveforms.length;
 
-    });
+/*       textEntity.setAttribute('value', 'New Sine Value');
+ */    });
 
     el.addEventListener('mouseleave', () => {
       isHovering = false;
