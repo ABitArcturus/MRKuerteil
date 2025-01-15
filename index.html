@@ -18,46 +18,34 @@
   asdasd
   <a-scene>
     <!-- xyz - rechts oben vorne -->
-
-
+    <a-entity sliderLine="oscIndex: 0" line="color: white">
+    </a-entity>
+    <a-entity id="slider" geometry="primitive: box; height: 0.5; width: 0.5; depth: 0.5" color=" red" position="0 2 -2"
+      slider class="clickable"></a-entity>
 
 
     <a-entity id="triangle"></a-entity>
-
-    <a-box tone-key="oscIndex: 0; hoverColor: " color="#e5dddd" scale="0.4 0.6 0.1" class="clickable"
-      rotation="0 60 0"></a-box>
-    <a-box tone-key="oscIndex: 1; hoverColor: " color="#e5dddd" scale="0.4 0.6 0.1" class="clickable"
-      rotation="0 40 0"></a-box>
-    <a-box tone-key="oscIndex: 2; hoverColor: " color="#e5dddd" scale="0.4 0.6 0.1" class="clickable"
-      rotation="0 20 0"></a-box>
+    <!-- ///////////////////////////////////////////// keys -->
+    <a-box tone-key="oscIndex: 0; hoverColor: " color="#e5dddd" scale="0.4 0.6 0.1" class="clickable"></a-box>
+    <a-box tone-key="oscIndex: 1; hoverColor: " color="#e5dddd" scale="0.4 0.6 0.1" class="clickable"></a-box>
+    <a-box tone-key="oscIndex: 2; hoverColor: " color="#e5dddd" scale="0.4 0.6 0.1" class="clickable"></a-box>
     <!-- middle -->
     <a-box tone-key="oscIndex: 3; hoverColor: " color="#e5dddd" scale="0.4 0.6 0.1" class="clickable"></a-box>
-    <a-box tone-key="oscIndex: 4; hoverColor: " color=" #e5dddd" scale="0.4 0.6 0.1" class="clickable"
-      rotation="0 -20 0"></a-box>
-    <a-box tone-key="oscIndex: 5; hoverColor: " color="#e5dddd" scale="0.4 0.6 0.1" class="clickable"
-      rotation="0 -40 0"></a-box>
-    <a-box tone-key="oscIndex: 6; hoverColor: " color=" #e5dddd" scale="0.4 0.6 0.1" class="clickable"
-      rotation="0 -60 0"></a-box>
+    <a-box tone-key="oscIndex: 4; hoverColor: " color=" #e5dddd" scale="0.4 0.6 0.1" class="clickable"></a-box>
+    <a-box tone-key="oscIndex: 5; hoverColor: " color="#e5dddd" scale="0.4 0.6 0.1" class="clickable"></a-box>
+    <a-box tone-key="oscIndex: 6; hoverColor: " color=" #e5dddd" scale="0.4 0.6 0.1" class="clickable"></a-box>
 
+    <!-- ///////////////////////////////////////////// sinewaves -->
     <a-box sinewave="oscIndex: 0; hoverColor: " position="-2.5 3.2 -3" color="#e5dddd" scale="0.4 0.4 0.1"
       class="clickable" material="src: ./ar-markers/sinus.png"></a-box>
 
 
-    <!-- 
-      <a-assets>
-        <a-asset-item id="sinusShape" src="./assets/sinus.gltf"></a-asset-item>
-      </a-assets>
-    
-      <a-entity gltf-model="#sinusShape" scale="1 1 1" position="-2.5 3.2 -3"></a-entity> -->
-    <!--     <a-entity id="sinus-line" position="-2.5 3.2 -3"></a-entity>
- -->
-    <!--     <a-plane position="-2.5 3.6 -2" width="4" height="3" 
-      material="src: ./assets/sine.png; opacity: 0.5"></a-plane> -->
 
-    <a-entity sinewave-box position="0 1 -1">
+
+    <a-entity sinewave-box position="-5 1 -7">
       <!-- position="-2 3.2 -3 -->
       <a-box sinewave="oscIndex: 1; hoverColor: " color="#e5dddd" scale="0.4 0.4 0.1" class="clickable"></a-box>
-      <a-text value="sine" align="center" color="#FFFFFF" position="0 0 1" ></a-text>
+      <a-text value="sine" align="center" color="#FFFFFF" position="0 0 1"></a-text>
     </a-entity>
 
     <a-box sinewave="oscIndex: 2; hoverColor: " position="-1.5 3.2 -3" color="#e5dddd" scale="0.4 0.4 0.1"

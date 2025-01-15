@@ -1,5 +1,47 @@
 import { OSC_Controller } from "./synthesizer/audioProcessing/oscController.js";
 
+AFRAME.registerComponent('sliderLine', {
+
+});
+
+AFRAME.registerComponent('slider', {
+  schema: {
+    minY: { type: 'number', default: -2 }, // Untere Grenze
+    maxY: { type: 'number', default: 2 },  // Obere Grenze
+  },
+  init: function () {
+    const el = this.el;
+    const data = this.data;
+    let dragging = false;
+
+    el.addEventListener('mousedown', () => {
+      dragging = true;
+    });
+    window.addEventListener('mouseup', () => { dragging = false; });
+    window.addEventListener('mousemove', (event) => {
+      if (!dragging) return;
+
+      // Calculate new position based on mouse movement
+
+      const movementY = event.movementY / 100; // Scale movement
+      const currentPosition = el.object3D.position;
+      console.log(movementY)
+
+      // Limit movement to minY and maxY
+      let newY = currentPosition.y - movementY;
+      newY = Math.max(data.minY, Math.min(newY, data.maxY));
+
+      // Set the new position
+      el.object3D.position.set(0, newY, -2);
+
+      // Calculate and log slider value (0 to 100)
+      const sliderValue = ((newY - data.minY) / (data.maxY - data.minY)) * 100;
+      /*       console.log('Slider Value:', Math.round(sliderValue));
+       */      /* console.log('Slider Value:', Math.round(sliderValue)); */
+    });
+  },
+});
+
 let isAudioActive = false;
 let isClickActive = false;
 
@@ -88,36 +130,48 @@ function activateOSC() {
 
 }
 
+let beingClicked = false; // for not accidentally triggering mouseup
+let isHovering = false;
 
 
 const aFrameScene = document.querySelector('a-scene');
-const totalNumberOfKeys = aFrameScene.querySelectorAll('[tone-key]').length;
 // for positioning
-const middleKey = Math.round(totalNumberOfKeys / 2);
-let numberOfKeysLeft = middleKey - 1;
+const totalNumberOfKeys = aFrameScene.querySelectorAll('[tone-key]').length;
+const middleKeyPos = Math.round(totalNumberOfKeys / 2);
+let numberOfKeysLeft = middleKeyPos - 1;
 
-let beingClicked = false; // for not accidentally triggering mouseup
-let isHovering = false;
 
 
 const positionXGap = 0.8;
 const positionsX = [];
 
-const positionZGap = 0.2;
+const positionZGap = 0.3;
 const positionsZ = [];
 
-// the middle key is at 0
+// calculating the X position of the leftmost key - middle key is located at 0
 let positionX = (positionXGap * numberOfKeysLeft) * -1;
 // position of the middle key - defines the other keys
-let positionYMiddle = 2, positionZMiddle = -3,
-  positionY = positionYMiddle, positionZ;
+// set the position here globally
+let posYMiddleKey = 2, posZMiddleKey = -3;
+let positionY = posYMiddleKey, positionZ;
+let rotationMiddleyKey = 0;
+let rotationY, rotationYGap = 15;
+const rotationsY = [];
 
+// distance to other buttons
+let distanceUp = 10, distanceDown = 10;
+
+// saving the xyz coordinates of the keys
 for (let i = 0; i < totalNumberOfKeys; i++) {
   positionsX.push(positionX);
   positionX = positionX + positionXGap;
 
-  positionZ = positionZMiddle + positionZGap * Math.abs(numberOfKeysLeft - i);
+  // z starts closer to cam, gets further until middle, gets closer
+  positionZ = posZMiddleKey + positionZGap * Math.abs(numberOfKeysLeft - i);
   positionsZ.push(positionZ);
+
+  rotationY = rotationMiddleyKey + rotationYGap * (numberOfKeysLeft - i);
+  rotationsY.push(rotationY);
 }
 
 
@@ -136,16 +190,16 @@ AFRAME.registerComponent('tone-key', {//keine großbuchstaben nutzen, sonst funz
     const hoverColor = this.data.hoverColor;
     let beingClicked = false;
 
+    el.setAttribute('position', `${positionsX[this.data.oscIndex]} ${positionY} ${positionsZ[this.data.oscIndex]}`);
+    el.setAttribute('rotation', `0 ${rotationsY[this.data.oscIndex]} 0`);
+    
+    
     // Zugriff auf den Controller und OSC je nach Index
     const controllerIndex = this.data.oscIndex;
     const isPlaying = isOSCPlaying[this.data.oscIndex];
 
-    /* for (let i = middleKey; i < numberOfKeys; i++) {
-          console.log("positionX: ", positionX);
-        } */
 
 
-    el.setAttribute('position', `${positionsX[this.data.oscIndex]} ${positionY} ${positionsZ[this.data.oscIndex]}`);
 
 
 
@@ -206,7 +260,7 @@ AFRAME.registerComponent('tone-key', {//keine großbuchstaben nutzen, sonst funz
 });
 AFRAME.registerComponent('sinewave-box', {
 
-}); 
+});
 AFRAME.registerComponent('sinewave', {
   schema: {
     oscIndex: { type: 'int' },
@@ -356,58 +410,3 @@ function run() {
     }
   }
 }
-
-/* AFRAME.registerComponent('draw-zigzag-line', {
-  init: function () {
-    // Erstellen der Punkte für die Zick-Zack-Linie
-    const points = [];
-    for (let i = 0; i < 10; i++) {
-      points.push(new THREE.Vector3(i, (i % 2 === 0) ? 0 : 1, i));  // Zick-Zack-Bewegung
-    }
-
-    // Erstellen des Geometrie-Objekts für die Linie
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-
-    // Erstellen des Material-Objekts für die Linie
-    const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
-
-    // Erstellen der Linie mit den Geometrie- und Material-Objekten
-    const line = new THREE.Line(geometry, material);
-
-    // Setzen der Linie als 3D-Objekt in A-Frame
-    this.el.setObject3D('line', line);
-  }
-});
-
-// Linie zeichnen, wenn die Szene geladen ist
-document.querySelector('#triangle').setAttribute('draw-zigzag-line', {});
-
-AFRAME.registerComponent('draw-sinus-wave', {
-  init: function () {
-    const points = [];
-    const frequency = 1; // Frequenz der Sinuswelle (1 Periode)
-
-    // Wir zeichnen die Sinuswelle auf der X-Achse, indem wir Punkte generieren
-    for (let i = 0; i <= 100; i++) {
-      let x = i / 10; // Schrittgröße
-      let y = Math.sin(frequency * x); // Sinusfunktion
-      points.push(new THREE.Vector3(x, y, 0)); // Füge den Punkt zur Linie hinzu
-    }
-
-    // Erstelle die Geometrie der Linie aus den Punkten
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-
-    // Material der Linie
-    const material = new THREE.LineBasicMaterial({ color: 0x000000 });
-
-    // Erstelle die Linie
-    const line = new THREE.Line(geometry, material);
-
-    // Setze die Linie als 3D-Objekt im A-Frame-Element
-    this.el.setObject3D('line', line);
-  }
-});
-
-
-document.querySelector('#sinus-line').setAttribute('draw-sinus-wave', {}); */
-
