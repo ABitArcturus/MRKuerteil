@@ -1,5 +1,10 @@
 import { OSC_Controller } from "./synthesizer/audioProcessing/oscController.js";
 
+window.addEventListener('DOMContentLoaded', () => {
+  activateOSC();
+});
+
+
 let isAudioActive = false;
 let isClickActive = false;
 
@@ -10,14 +15,12 @@ function activateOSC() {
   isAudioActive = true;
   console.log('activateOSC');
 
+  // setting up the oscillators
   for (let i = 0; i < 7; i++) {
     const controller = new OSC_Controller();
     controller.setOSCAttack(0.05)
     controller.setOSCRelease(0.1)
 
-    /* controller.setOSCWaveform("square"); */
-    /* controller.setOSCWaveform("triangle"); */
-    controller.setOSCWaveform("sawtooth");
     controller.setOSCFrequModGain(50);
     controller.setOSCFreqModFreq(5.3);
 
@@ -28,18 +31,12 @@ function activateOSC() {
     controller2.setOSCAttack(0.05)
     controller2.setOSCRelease(0.1)
 
-    /* controller.setOSCWaveform("square"); */
-    /* controller.setOSCWaveform("triangle"); */
-    controller2.setOSCWaveform("sawtooth");
     controller2.setOSCFrequModGain(50);
     controller2.setOSCFreqModFreq(5.3);
 
     controllers2.push(controller);
-
-
   }
   controllers[0].setOSCFrequency(261);
-
 
   controllers[1].setOSCFrequency(587);
   controllers[1].setOSCWaveform("triangle");
@@ -48,7 +45,6 @@ function activateOSC() {
   controllers[2].setOSCWaveform("sine");
 
   controllers[3].setOSCFrequency(698);
-
   controllers[3].toggleOSCRingModFreq();
 
   controllers[4].setOSCFrequency(784);
@@ -56,14 +52,12 @@ function activateOSC() {
 
   controllers[5].setOSCFrequency(880);
 
-
   controllers[6].setOSCFrequency(987);
   controllers[6].setOSCFreqModFreq(15);
   controllers[6].setOSCWaveform("square");
 
-  //
+  // 2nd oscillator
   controllers2[0].setOSCFrequency(261);
-
 
   controllers2[1].setOSCFrequency(587);
   controllers2[1].setOSCWaveform("triangle");
@@ -72,7 +66,6 @@ function activateOSC() {
   controllers2[2].setOSCWaveform("sine");
 
   controllers2[3].setOSCFrequency(698);
-
   controllers2[3].toggleOSCRingModFreq();
 
   controllers2[4].setOSCFrequency(784);
@@ -80,91 +73,106 @@ function activateOSC() {
 
   controllers2[5].setOSCFrequency(880);
 
-
   controllers2[6].setOSCFrequency(987);
   controllers2[6].setOSCFreqModFreq(15);
   controllers2[6].setOSCWaveform("square");
-
-
 }
-
-
-
-const aFrameScene = document.querySelector('a-scene');
-const totalNumberOfKeys = aFrameScene.querySelectorAll('[tone-key]').length;
-// for positioning
-const middleKey = Math.round(totalNumberOfKeys / 2);
-let numberOfKeysLeft = middleKey - 1;
 
 let beingClicked = false; // for not accidentally triggering mouseup
 let isHovering = false;
 
 
-const positionXGap = 0.8;
-const positionsX = [];
+const aFrameScene = document.querySelector('a-scene');
+// for positioning
+const totalNumberOfKeys = aFrameScene.querySelectorAll('[tone-key]').length,
+  middleKeyNum = Math.round(totalNumberOfKeys / 2),
+  numberOfKeysLeft = middleKeyNum - 1;
 
-const positionZGap = 0.2;
-const positionsZ = [];
 
-// the middle key is at 0
-let positionX = (positionXGap * numberOfKeysLeft) * -1;
+
 // position of the middle key - defines the other keys
-let positionYMiddle = 2, positionZMiddle = -3,
-  positionY = positionYMiddle, positionZ;
+// global positioning is set here
+const posYMiddleKey = 2.5,
+  posZMiddleKey = -3,
+  rotationMiddleyKey = 0;
 
+const positionXGap = 0.8,
+  positionZGap = 0.3;
+
+// position variables for key locations
+let positionX,
+  // y stays the same for all keys
+  positionY = posYMiddleKey,
+  positionZ,
+  rotationY,
+  rotationYGap = 15;
+const positionsX = [],
+  positionsZ = [],
+  rotationsY = [];
+
+// distance to other control buttons
+const distanceUp = 0.6, distanceDown = 1;
+
+// saving the xyz coordinates of the keys
 for (let i = 0; i < totalNumberOfKeys; i++) {
+  // calculating the initial X position of the leftmost key - middle key is located at 0
+  positionX = (positionXGap * numberOfKeysLeft) * -1 + positionXGap * i;
   positionsX.push(positionX);
-  positionX = positionX + positionXGap;
 
-  positionZ = positionZMiddle + positionZGap * Math.abs(numberOfKeysLeft - i);
+  // z starts closer to cam - gets further until middle - gets closer
+  positionZ = posZMiddleKey + positionZGap * Math.abs(numberOfKeysLeft - i);
   positionsZ.push(positionZ);
+
+  rotationY = rotationMiddleyKey + rotationYGap * (numberOfKeysLeft - i);
+  rotationsY.push(rotationY);
 }
+
+// default box appearance
+const boxColorDefault = "#e5dddd",
+  boxColorHover = '#e5bbbb',
+  boxWidthDefault = 0.4,
+  boxHeightDefault = 0.4,
+  boxDepthDefault = 0.1;
+
 
 
 AFRAME.registerComponent('tone-key', {//keine großbuchstaben nutzen, sonst funzt nicht
-  schema: {
+  /* schema: {
     oscIndex: { type: 'int' },
-    color: { /* set in html */ },
-    hoverColor: { default: '#e5bbbb' },
+
     position: { default: '0 2 -3' }
-  },
+  }, */
 
   init: function () {
     const el = this.el;
-    const normalSize = "" + el.getAttribute('scale').x + " " + el.getAttribute('scale').y + " " + el.getAttribute('scale').z;
-    const defaultColor = el.getAttribute('color');;
-    const hoverColor = this.data.hoverColor;
+    const normalScale = `${boxWidthDefault} ${boxHeightDefault + 0.2} ${boxDepthDefault}`,
+      currentIndex = el.getAttribute('oscIndex');
+
     let beingClicked = false;
+    el.setAttribute('scale', normalScale);
+    el.setAttribute('position', `${positionsX[currentIndex]} ${positionY} ${positionsZ[currentIndex]}`);
+    el.setAttribute('rotation', `0 ${rotationsY[currentIndex]} 0`);
+
 
     // Zugriff auf den Controller und OSC je nach Index
-    const controllerIndex = this.data.oscIndex;
-    const isPlaying = isOSCPlaying[this.data.oscIndex];
-
-    /* for (let i = middleKey; i < numberOfKeys; i++) {
-          console.log("positionX: ", positionX);
-        } */
-
-
-    el.setAttribute('position', `${positionsX[this.data.oscIndex]} ${positionY} ${positionsZ[this.data.oscIndex]}`);
-
-
+    const isPlaying = isOSCPlaying[currentIndex];
 
     // Event Listener für mouse / touch Events
     el.addEventListener('mousedown', () => {
       beingClicked = true;
       if (isClickActive) {
-        this.el.setAttribute('color', defaultColor);
-        isOSCPlaying[this.data.oscIndex] = true;
-        triggerOSC(controllerIndex);
+/*         this.el.setAttribute('color', boxColorHover);
+ */        isOSCPlaying[currentIndex] = true;
+        triggerOSC(currentIndex);
       }
     });
 
     el.addEventListener('mouseup', () => {
       if (beingClicked) {
         if (isClickActive) {
-          this.el.setAttribute('color', defaultColor);
-          isOSCPlaying[this.data.oscIndex] = false;
-          triggerOSC(controllerIndex, isOSCPlaying[this.data.oscIndex]);
+/*           this.el.setAttribute('color', boxColorDefault);
+ */          isOSCPlaying[currentIndex] = false;
+          triggerOSC(currentIndex, isOSCPlaying[currentIndex]);
         }
         beingClicked = false;
       }
@@ -172,88 +180,89 @@ AFRAME.registerComponent('tone-key', {//keine großbuchstaben nutzen, sonst funz
 
     el.addEventListener('mouseenter', () => {
       isHovering = true;
-      el.setAttribute('color', hoverColor);
+      el.setAttribute('color', boxColorHover);
       el.setAttribute('animation', {
         property: 'scale',
         to: '0.4 0.6 0.2',
         dur: 50
       });
-      if (!isAudioActive) {
-        activateOSC();
-      }
+
       if (!isClickActive) {
-        isOSCPlaying[this.data.oscIndex] = true;
-        triggerOSC(controllerIndex, isOSCPlaying[this.data.oscIndex]);
+        isOSCPlaying[currentIndex] = true;
+        triggerOSC(currentIndex, isOSCPlaying[currentIndex]);
       }
     });
 
     el.addEventListener('mouseleave', () => {
       isHovering = false;
-      el.setAttribute('color', defaultColor);
+      el.setAttribute('color', boxColorDefault);
       el.setAttribute('animation', {
         property: 'scale',
-        to: normalSize,
+        to: normalScale,
         dur: 50
       });
 
       if (!isClickActive) {
-        el.setAttribute('color', defaultColor);
-        isOSCPlaying[this.data.oscIndex] = false;
-        triggerOSC(controllerIndex, isOSCPlaying[this.data.oscIndex]);
+        el.setAttribute('color', boxColorDefault);
+        isOSCPlaying[currentIndex] = false;
+        triggerOSC(currentIndex, isOSCPlaying[currentIndex]);
       }
     });
   }
 });
 AFRAME.registerComponent('sinewave-box', {
-
-}); 
-AFRAME.registerComponent('sinewave', {
-  schema: {
-    oscIndex: { type: 'int' },
-    color: { /* set in html */ },
-    hoverColor: { default: '#e5bbbb' }
-  },
-
   init: function () {
-    const el = this.el;
-    const normalSize = "" + el.getAttribute('scale').x + " " + el.getAttribute('scale').y + " " + el.getAttribute('scale').z;
-    const defaultColor = el.getAttribute('color');;
-    const hoverColor = this.data.hoverColor;
+    const el = this.el,
+      sinewaveBox = el.querySelector('a-box'),
+      sinewaveText = el.querySelector('a-text'),
 
-    const controllerIndex = this.data.oscIndex;
+      normalScale = `${boxWidthDefault} ${boxHeightDefault} ${boxDepthDefault}`,
+      hoverScale = `${boxWidthDefault} ${boxHeightDefault} ${boxDepthDefault + 0.1}`,
+      currentIndex = sinewaveBox.getAttribute('oscIndex');
+
+    // setting up the text
+    sinewaveText.setAttribute('scale', '1 1 1');
+    sinewaveText.setAttribute('position', '0 0 0.5');
+    for (let i = 0; i < totalNumberOfKeys; i++) {
+      sinewaveText.setAttribute('value', controllers[currentIndex].getOSCWaveform());
+    }
+
+    el.setAttribute('scale', normalScale);
+
+    // positioning
+    el.setAttribute('position', `${positionsX[currentIndex]} ${positionY + distanceUp} ${positionsZ[currentIndex]}`);
+    el.setAttribute('rotation', `0 ${rotationsY[currentIndex]} 0`);
 
 
     const waveforms = ["sine", "square", "sawtooth", "triangle"];
-    let currentIndex = 0;
-
-    // positioning
-    /* el.setAttribute('position', `${positionsX[this.data.oscIndex]} ${positionY + 0.8} ${positionsZ[this.data.oscIndex]}`); */
-
+    let currentWaveform = 0;
 
     el.addEventListener('mouseenter', () => {
+
       isHovering = true;
-      el.setAttribute('color', hoverColor);
+      sinewaveBox.setAttribute('color', boxColorHover);
       el.setAttribute('animation', {
         property: 'scale',
-        to: '0.4 0.4 0.2',
+        to: hoverScale,
         dur: 50
       });
 
 
-      controllers[controllerIndex].setOSCWaveform(waveforms[currentIndex]);
-      controllers2[controllerIndex].setOSCWaveform(waveforms[currentIndex]);
+      controllers[currentIndex].setOSCWaveform(waveforms[currentWaveform]);
+      controllers2[currentIndex].setOSCWaveform(waveforms[currentWaveform]);
 
 
-      currentIndex = (currentIndex + 1) % waveforms.length;
+      currentWaveform = (currentWaveform + 1) % waveforms.length;
+      sinewaveText.setAttribute('value', waveforms[currentWaveform]);
 
     });
 
     el.addEventListener('mouseleave', () => {
       isHovering = false;
-      el.setAttribute('color', defaultColor);
+      sinewaveBox.setAttribute('color', boxColorDefault);
       el.setAttribute('animation', {
         property: 'scale',
-        to: normalSize,
+        to: normalScale,
         dur: 50
       });
 
@@ -302,27 +311,18 @@ function triggerOSC(controllerIndex) {
 
 }
 
-function toggleActiveColor(el, defaultColor) {
-  if (isClickActive) {
-    el.setAttribute('color', "#FF0000");
-  } else {
-    el.setAttribute('color', defaultColor);
-  }
-}
 
 let isRunning = false;
 
 window.addEventListener("keydown", (event) => {
   switch (event.key) {
     case " ":
-      if (!isAudioActive) {
-        activateOSC();
-      }
+
       isRunning = !isRunning;
       run();
       break;
     case "q":
-      activateOSC();
+
       break;
   }
 });
@@ -357,57 +357,123 @@ function run() {
   }
 }
 
-/* AFRAME.registerComponent('draw-zigzag-line', {
+
+
+const minY = 0.5, maxY = positionY - distanceDown; // lower and upper limit of the slider
+
+let target = null;
+/* const cursor = document.getElementById('cursor');
+
+const camera = document.getElementById('camera');
+
+document.addEventListener('mousemove', (event) => {
+  
+  const cursorPosition = cursor.getAttribute('position');
+  let previousYPosition = camera.object3D.position.y;
+  console.log(previousYPosition);
+
+}); */
+
+AFRAME.registerComponent('slider-knob', {
+
   init: function () {
-    // Erstellen der Punkte für die Zick-Zack-Linie
-    const points = [];
-    for (let i = 0; i < 10; i++) {
-      points.push(new THREE.Vector3(i, (i % 2 === 0) ? 0 : 1, i));  // Zick-Zack-Bewegung
+    let dragging = false;
+
+    const knob = this.el,
+      currentIndex = knob.getAttribute('oscIndex');
+
+    knob.setAttribute('position', `${positionsX[currentIndex]} ${positionY - distanceDown} ${positionsZ[currentIndex]}`);
+    knob.setAttribute('rotation', `0 ${rotationsY[currentIndex]} 0`);
+    knob.setAttribute('scale', `${boxWidthDefault} ${boxHeightDefault} ${boxDepthDefault}`);
+
+    knob.addEventListener('mouseenter', () => {
+      knob.setAttribute('color', boxColorHover);
+    });
+    knob.addEventListener('mouseleave', () => {
+      knob.setAttribute('color', boxColorDefault);
+      dragging = false;
+    });
+
+    knob.addEventListener('mousedown', (event) => {
+      dragging = true;
+    });
+    knob.addEventListener('mouseup', () => {
+      dragging = false;
+    });
+    // does not work on mobile
+    knob.addEventListener('touchstart', (event) => {
+      dragging = true;
+      event.preventDefault();
+    });
+    document.addEventListener('touchend', () => {
+      dragging = false;
+    });
+    window.addEventListener('mousemove', (event) => {
+
+      if (!dragging) return;
+
+
+      console.log(event.touches[0].clientY);
+      // calculating new position based on mouse movement
+      const movementY = event.movementY / 100; // accuracy of movement
+      const currentPosition = knob.object3D.position;
+      let newYPos = currentPosition.y - movementY;
+
+      // limit the movement of the slider
+      newYPos = Math.max(minY, Math.min(newYPos, maxY));
+
+      knob.object3D.position.set(positionsX[currentIndex], newYPos, positionsZ[currentIndex]);
+
+      // calculating the slider value 0-100
+      const sliderValue = ((newYPos - minY) / (maxY - minY)) * 100;
+      console.log('Slider Value:', Math.round(sliderValue));
+      controllers[currentIndex].setOSCFreqModFreq(sliderValue);
+    });
+
+
+    let lastTouchY = null;
+
+    document.addEventListener('touchmove', (event) => {
+
+      if (!dragging) return;
+
+      event.preventDefault();
+
+      console.log(event.touches[0].clientY);
+      // Verhindern, dass die Seite scrollt
+      event.preventDefault();
+
+      const touch = event.touches[0];
+      const movementY = touch.clientY - lastTouchY;
+      lastTouchY = touch.clientY;
+
+      const currentPosition = knob.object3D.position;
+      let newYPos = currentPosition.y - movementY ; // Genauigkeit der Bewegung
+
+      // limit the movement of the slider
+      newYPos = Math.max(minY, Math.min(newYPos, maxY));
+
+      knob.object3D.position.set(currentPosition.x, newYPos, currentPosition.z);
     }
+    );
 
-    // Erstellen des Geometrie-Objekts für die Linie
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
-    // Erstellen des Material-Objekts für die Linie
-    const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
 
-    // Erstellen der Linie mit den Geometrie- und Material-Objekten
-    const line = new THREE.Line(geometry, material);
 
-    // Setzen der Linie als 3D-Objekt in A-Frame
-    this.el.setObject3D('line', line);
-  }
+  },
+
+
+
+
+
 });
-
-// Linie zeichnen, wenn die Szene geladen ist
-document.querySelector('#triangle').setAttribute('draw-zigzag-line', {});
-
-AFRAME.registerComponent('draw-sinus-wave', {
+AFRAME.registerComponent('slider-line', {
   init: function () {
-    const points = [];
-    const frequency = 1; // Frequenz der Sinuswelle (1 Periode)
+    const line = this.el;
+    const currentIndex = line.getAttribute('oscIndex');
+    const startPosition = `${positionsX[currentIndex]} ${positionY - distanceDown} ${positionsZ[currentIndex]}`,
+      endPosition = `${positionsX[currentIndex]} ${positionY - distanceDown - 1} ${positionsZ[currentIndex]}`;
 
-    // Wir zeichnen die Sinuswelle auf der X-Achse, indem wir Punkte generieren
-    for (let i = 0; i <= 100; i++) {
-      let x = i / 10; // Schrittgröße
-      let y = Math.sin(frequency * x); // Sinusfunktion
-      points.push(new THREE.Vector3(x, y, 0)); // Füge den Punkt zur Linie hinzu
-    }
-
-    // Erstelle die Geometrie der Linie aus den Punkten
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-
-    // Material der Linie
-    const material = new THREE.LineBasicMaterial({ color: 0x000000 });
-
-    // Erstelle die Linie
-    const line = new THREE.Line(geometry, material);
-
-    // Setze die Linie als 3D-Objekt im A-Frame-Element
-    this.el.setObject3D('line', line);
-  }
+    line.setAttribute('line', `start: ${startPosition}; end: ${endPosition}; color: white`);
+  },
 });
-
-
-document.querySelector('#sinus-line').setAttribute('draw-sinus-wave', {}); */
-

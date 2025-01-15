@@ -55,6 +55,14 @@ class OSC_Controller {
     setOSCWaveform(type) {
         this.osc.type = type;
     }
+    /**
+     * Gets the waveform of the oscillator.
+     *
+     * @return {string} - The type of waveform of the oscillator.
+     */
+    getOSCWaveform() {
+        return this.osc.type;
+    }
 
     setOSCFrequency(freq) {
         this.osc.frequency.value = freq;
@@ -116,6 +124,9 @@ class OSC_Controller {
 
     setOSCFreqModFreq(freq) {
         this.oscFreqMod.frequency.value = freq;
+    }
+    getOSCFreqModFreq() {
+        return this.oscFreqMod.frequency.value;
     }
 
     setOSCRingModFreq(freq) {
